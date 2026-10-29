@@ -1,0 +1,41 @@
+#include "MapManager.h"
+#include "MapParameter.h"
+#include "MapChip.h"
+#include "Block.h"
+
+
+// キャラクターの周囲何マスまでチェックするか
+#define CHECK_ROUND_NUM (2)
+
+void InitMap()
+{
+}
+
+void LoadMap()
+{
+	LoadMapChipData();
+	LoadBlock();
+}
+
+void StartMap()
+{
+	CreateMap();
+}
+
+void DrawMap()
+{
+	// ブロック描画
+	DrawBlock();
+}
+
+void FinMap()
+{
+}
+
+void ChceckMapPlayerCollision()
+{
+	
+
+}
+
+
