@@ -1,6 +1,7 @@
 #include "DxLib.h"
 #include "player.h"
 #include "../Input/Input.h"
+#include "../Animation/Animation.h"
 
 #define PLAYER_JUMP_POWER (12.0f)
 
@@ -60,7 +61,7 @@ void UpdatePlayer()
 
 	if (IsInputKey(KEY_D))//右移動
 	{
-		g_PlayerData.handle = LoadGraph("Data/Player/プレイヤー待機.png");
+		
 	}
 	else if (IsInputKey(KEY_A))//左移動
 	{
@@ -79,6 +80,11 @@ void UpdatePlayer()
 
 void DrawPlayer()
 {
+	if (IsInputKey(KEY_D))//右移動
+	{
+
+	}
+
 	DrawGraph((int)g_PlayerData.posX, (int)g_PlayerData.posY, g_PlayerData.handle, TRUE);
 }
 
