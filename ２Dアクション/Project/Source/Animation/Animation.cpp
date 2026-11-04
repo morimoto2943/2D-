@@ -1,145 +1,93 @@
 #include "DxLib.h"
 #include "Animation.h"
-#include "AnimationParameter.h"
 
-
-AnimationData g_AnimationData[ANIMATION_MAX] = { 0 };
-
-// エフェクトの画像ハンドル
-int g_AnimationEffectHandle[ANIMATION_TYPE_MAX];
-
-// エフェクト初期化
-void InitAnimationEffect()
+void InitAnimation(AnimationData* animData)
 {
-	AnimationData* effect = g_AnimationData;
-	for (int i = 0; i < ANIMATION_MAX; i++, effect++)
-	{
-		effect->active = false;
-		effect->handle = 0;
-		effect->nowFrame = 0;
-		effect->frameNum = 0;
-		effect->frameWidth = 0;
-		effect->frameHeight = 0;
-		effect->timer = 0;
-		effect->posX = 0.0f;
-		effect->posY = 0.0f;
-	}
+	animData->active = false;
+	animData->handle = 0;
+	animData->nowFrame = 0;
+	animData->frameNum = 0;
+	animData->frameWidth = 0;
+	animData->frameHeight = 0;
+	animData->timer = 0;
+	animData->pos = VGet(0.0f, 0.0f, 0.0f);
 }
 
-// エフェクトロード
-void LoadAnimationEffect()
+void StartAnimation(AnimationData* animData, VECTOR pos, int interval, int frameNum, int width, int height, bool isLoop)
 {
-	g_AnimationEffectHandle[PLAYER_RIGHT_WOOK] = LoadGraph("Data/Player/右移動.png");
-	g_AnimationEffectHandle[PLAYER_LEFT_WOOK] = LoadGraph("Data/Effect/PlayerDead.png");
-	g_AnimationEffectHandle[PLAYER_JUMP] = LoadGraph("Data/Effect/EnemyDead.png");
-	
+	// アクティブ
+	animData->active = true;
+
+	// 座標設定
+	animData->pos = pos;
+
+	// インターバル設定
+	animData->interval = interval;
+
+	// タイマー設定
+	animData->timer = animData->interval;
+
+	// 0コマ目にする
+	animData->nowFrame = 0;
+
+	// コマ数
+	animData->frameNum = frameNum;
+
+	// 1コマのサイズ
+	animData->frameWidth = width;
+	animData->frameHeight = height;
+
+	// ループするか
+	animData->isLoop = isLoop;
 }
 
-// エフェクトステップ
-void StepAnimationEffect()
+void UpdateAnimation(AnimationData* animData)
 {
-	AnimationData* effect = g_AnimationData;
-	for (int i = 0; i < ANIMATION_MAX; i++, effect++)
+	if (!animData->active) return;
+
+	// 次のコマへ進めるか
+	if (animData->timer <= 0)
 	{
-		if (!effect->active)continue;
+		// 次のコマへ
+		animData->nowFrame++;
+		// タイマーリセット
+		animData->timer = animData->interval;
 
-
-
-		if (effect->timer <= 0)
+		// 全コマ表示し終わったら非アクティブ
+		if (animData->nowFrame >= animData->frameNum)
 		{
-			effect->nowFrame++;
-
-			effect->timer = effect->interval;
-
-			if (effect->nowFrame >= effect->frameNum)
+			// ループするかどうか
+			if (animData->isLoop)
 			{
-				effect->active = false;
-
-				continue;
+				// 0コマ目に戻る
+				animData->nowFrame = 0;
 			}
-		}
+			else
+			{
+				// 終了
+				animData->active = false;
+			}
 
-
-		effect->timer--;
-
-	}
-}
-
-// エフェクト更新
-void UpdateAnimationEffect()
-{
-}
-
-// エフェクト描画
-void DrawAnimationEffect()
-{
-	AnimationData* effect = g_AnimationData;
-	for (int i = 0; i < ANIMATION_MAX; i++, effect++)
-	{
-		// 未使用のエフェクトは処理しない
-		if (!effect->active)continue;
-
-		// 1コマ分の横幅（effect->frameWidth）と
-		// 現在のコマ数（effect->nowFrame）から、
-		// 切り取る部分を計算する
-		int srcX = effect->nowFrame * effect->frameWidth;
-		int srcY = 0.0f;
-
-
-		// DrawRectGraph関数で描画すべきコマの部分だけ描画する
-		DrawRectGraph((int)effect->posX, (int)effect->posY, srcX, srcY, effect->frameWidth, effect->frameHeight, effect->handle, TRUE);
-
-	}
-}
-
-// エフェクト終了
-void FinAnimationEffect()
-{
-	for (int i = 0; i < ANIMATION_TYPE_MAX; i++)
-	{
-		DeleteGraph(g_AnimationEffectHandle[i]);
-	}
-}
-
-// エフェクト再生
-void PlayAnimation(AnimationType type, float posX, float posY, int interval)
-{
-	// マスターパラム取得
-	AnimationMasterParameter param = ANIM_MASTER_PARAM[type];
-
-	AnimationData* effect = g_AnimationData;
-	for (int i = 0; i < ANIMATION_MAX; i++, effect++)
-	{
-		// 未使用のエフェクトを探す
-		if (!effect->active)
-		{
-			// アクティブ
-			effect->active = true;
-
-			// 座標設定
-			effect->posX = posX;
-			effect->posY = posY;
-
-			// インターバル設定
-			effect->interval = interval;
-
-			// タイマー設定
-			effect->timer = effect->interval;
-
-			// 画像ハンドル
-			effect->handle = g_AnimationEffectHandle[type];
-
-			// 0コマ目にする
-			effect->nowFrame = 0;
-
-			// コマ数
-			effect->frameNum = param.frameNum;
-
-			// 1コマのサイズ
-			effect->frameWidth = param.frameWidth;
-			effect->frameHeight = param.frameHeight;
-
-			break;
+			// これ以上処理する必要なし
+			return;
 		}
 	}
+
+	animData->timer--;
+}
+
+void DrawAnimation(AnimationData* animData, bool isTurnX, bool isTurnY)
+{
+	DrawAnimation(animData, animData->pos, isTurnX, isTurnY);
+}
+
+void DrawAnimation(AnimationData* animData, VECTOR pos, bool isTurnX, bool isTurnY)
+{
+	if (!animData->active)return;
+
+	// コマの切り取り位置計算（横１行の画像の想定）
+	int frameX = animData->frameWidth * animData->nowFrame;
+
+	// 画像から表示するコマの部分だけ描画
+	DrawRectGraph((int)pos.x, (int)pos.y, frameX, 0, animData->frameWidth, animData->frameHeight, animData->handle, TRUE, isTurnX, isTurnY);
 }
