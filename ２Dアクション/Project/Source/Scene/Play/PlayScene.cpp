@@ -23,13 +23,16 @@ void InitPlayScene()
 void LoadPlayScene()
 {
 	
+	LoadPlayer();
+
 	// マップをロード
 	LoadMap();
 }
 
 void StartPlayScene()
 {
-	
+	StartPlayer();
+
 
 	// マップを開始
 	StartMap();
@@ -39,7 +42,7 @@ void StartPlayScene()
 
 void StepPlayScene()
 {
-	
+	StepPlayer();
 
 	StepCamera();
 }

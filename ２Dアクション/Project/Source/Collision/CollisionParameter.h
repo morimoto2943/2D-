@@ -10,6 +10,9 @@ struct Body
 	VECTOR move;
 	float width;
 	float height;
+	float radius;
+	float reflactPower;
 	VECTOR prevPos;
+	const BlockData* nitBlock;
 	const BlockData* groundBlock;
 };

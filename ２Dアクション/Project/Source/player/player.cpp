@@ -3,6 +3,8 @@
 #include "../Input/Input.h"
 #include "../Animation/Animation.h"
 #include "../Map/MapManager.h"
+#include "../Camera/Camera.h"
+
 
 
 struct PlayerAnimationParam
@@ -14,10 +16,10 @@ struct PlayerAnimationParam
 };
 
 
-// プレイヤー設定関連
+// プレイヤー設定関連 
 #define PLAYER_RADIUS	(36.0f)
 #define PLAYER_DEFAULT_POS_X (100.0f)
-#define PLAYER_DEFAULT_POS_Y (700.0f)
+#define PLAYER_DEFAULT_POS_Y (600.0f)
 #define PLAYER_MOVE_SPEED (3.0f)
 #define PLAYER_WIDTH (20)
 #define PLAYER_HEIGHT (44)
@@ -25,8 +27,8 @@ struct PlayerAnimationParam
 
 const PlayerAnimationParam PLAYER_ANIM_PARAM[PLAYER_ANIM_MAX] =
 {
-	8, 4, 72, 72,
-	5, 8, 72, 72,
+	8, 1, 87, 147,
+	5, 7, 513, 113,
 	8, 2, 72, 72,
 	8, 2, 72, 72,
 	8, 1, 72, 72,
@@ -42,8 +44,8 @@ const PlayerAnimationParam PLAYER_ANIM_PARAM[PLAYER_ANIM_MAX] =
 #define PLAYER_GROUND_SNAP (3.0f)
 
 // 描画位置補正
-#define PLAYER_DRAW_OFFSET_X (-24)
-#define PLAYER_DRAW_OFFSET_Y (-20)
+#define PLAYER_DRAW_OFFSET_X (-4)
+#define PLAYER_DRAW_OFFSET_Y (-120)
 
 // 落下判定になるY移動量
 #define PLAYER_FALL_Y_MOVE (1.6f)
@@ -68,17 +70,18 @@ void UpdatePlayerAnimation();							// アニメーション更新
 
 void InitPlayer()
 {
-	g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
+	//g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
 
-	g_PlayerData.posX = PLAYER_DEFAULT_POS_X;
+	/*g_PlayerData.posX = PLAYER_DEFAULT_POS_X;
 	g_PlayerData.posY = PLAYER_DEFAULT_POS_Y;
 	g_PlayerData.moveX = PLAYER_MOVE_SPEED;
-	g_PlayerData.moveY = PLAYER_MOVE_SPEED;
+	g_PlayerData.moveY = PLAYER_MOVE_SPEED;*/
 
 
 	g_PlayerData.playAnim = PLAYER_ANIM_NONE;
 	g_PlayerData.body = {};
 
+	g_PlayerData.active = false;
 
 	for (int i = 0; i < PLAYER_ANIM_MAX; i++)
 	{
@@ -99,7 +102,8 @@ void LoadPlayer()
 
 void StartPlayer()
 {
-
+	g_PlayerData.active = true;
+	                                 
 	// 初期位置
 	g_PlayerData.body.pos.x = PLAYER_DEFAULT_POS_X;
 	g_PlayerData.body.pos.y = PLAYER_DEFAULT_POS_Y;
@@ -116,6 +120,13 @@ void StartPlayer()
 
 void StepPlayer()
 {
+
+	if (!g_PlayerData.active)
+	{
+		return;
+	}
+
+
 	// 前回の座標を記憶
 	g_PlayerData.body.prevPos.x = g_PlayerData.body.pos.x;
 	g_PlayerData.body.prevPos.y = g_PlayerData.body.pos.y;
@@ -176,55 +187,86 @@ void UpdatePlayer()
 	}
 
 
+	                  
 
 
+	////右入力
+	//if (IsInputKey(KEY_D))
+	//{
+	//	g_PlayerData.posX += g_PlayerData.moveX;
+	//}
+	////左入力
+	//if (IsInputKey(KEY_A))
+	//{
+	//	g_PlayerData.posX -= g_PlayerData.moveX;
+	//}
 
-	//右入力
-	if (IsInputKey(KEY_D))
-	{
-		g_PlayerData.posX += g_PlayerData.moveX;
-	}
-	//左入力
-	if (IsInputKey(KEY_A))
-	{
-		g_PlayerData.posX -= g_PlayerData.moveX;
-	}
+	////ジャンプ
+	//if (IsTriggerKey(KEY_Z))
+	//{
+	//	g_PlayerData.moveY = -PLAYER_JUMP_POWER;
+	// 
+	//}
 
-	//ジャンプ
-	if (IsTriggerKey(KEY_Z))
-	{
-		g_PlayerData.moveY = -PLAYER_JUMP_POWER;
-	}
-
-	g_PlayerData.hitFlg = false;
+	//g_PlayerData.hitFlg = false;
 
 
-	if (IsInputKey(KEY_D))//右移動
-	{
-		g_PlayerData.handle = LoadGraph("Data/player/右移動.png");
-	}
-	else if (IsInputKey(KEY_A))//左移動
-	{
-		g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
-	}
-	else if (IsTriggerKey(KEY_Z))//ジャンプ
-	{
-		g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
-	}
-	else//ニュートラル
-	{
-		g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
-	}
+	//if (IsInputKey(KEY_D))//右移動
+	//{
+	//	g_PlayerData.handle = LoadGraph("Data/player/右移動.png");
+	//}
+	//else if (IsInputKey(KEY_A))//左移動
+	//{
+	//	g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
+	//}
+	//else if (IsTriggerKey(KEY_Z))//ジャンプ
+	//{
+	//	g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
+	//}
+	//else//ニュートラル
+	//{
+	//	g_PlayerData.handle = LoadGraph("Data/player/プレイヤー待機.png");
+	//}
 
 }
 
 void DrawPlayer()
 {
+	// カメラ取得
+	CameraData camera = GetCamera();
+
+	float x = g_PlayerData.body.pos.x + PLAYER_DRAW_OFFSET_X - camera.posX;
+	float y = g_PlayerData.body.pos.y + PLAYER_DRAW_OFFSET_Y - camera.posY;
+
+
+
+
+
+	// 画面に現在の状態を表示してデバッグする
+	DrawFormatString(0, 240, GetColor(255, 255, 255), "isAir = %d", g_PlayerData.body.isAir);
+	DrawFormatString(0, 260, GetColor(255, 255, 255), "move.x = %.2f, move.y = %.2f", g_PlayerData.body.move.x, g_PlayerData.body.move.y);
+	DrawFormatString(0, 280, GetColor(255, 255, 255), "playAnim = %d", g_PlayerData.playAnim);
+
+
+
+
+
 	PlayerAnimationType animType = g_PlayerData.playAnim;
 	AnimationData* animData = &g_PlayerData.animation[animType];
 	DrawAnimation(animData, VGet(x, y, 0.0f), g_PlayerData.isTurn);
 
-	DrawFormatString(0, 200, GetColor(-10, 20, -10), "プレイヤーの座標＝[%f, %f]", g_PlayerData.body.pos.x, g_PlayerData.body.pos.y);
+	DrawFormatString(0, 200, GetColor(255, 255, 255), "プレイヤーの座標＝[%f, %f]", g_PlayerData.body.pos.x, g_PlayerData.body.pos.y);
+
+
+	// デバッグ用：当たり判定のボックスを画面に赤枠で表示する
+	DrawBox(x, y, x + g_PlayerData.body.width, y + g_PlayerData.body.height, GetColor(255, 0, 0), FALSE);
+
+
+	// --- 【デバッグ用】当たり判定の枠を緑色で画面に描画する ---
+	float boxX = g_PlayerData.body.pos.x - camera.posX;
+	float boxY = g_PlayerData.body.pos.y - camera.posY;
+	DrawBox((int)boxX, (int)boxY, (int)(boxX + g_PlayerData.body.width), (int)(boxY + g_PlayerData.body.height), GetColor(0, 255, 0), FALSE);
+	// -------------------------------------------------------------
 }
 
 void FinPlayer()

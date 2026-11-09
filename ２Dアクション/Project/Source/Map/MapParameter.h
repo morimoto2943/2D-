@@ -20,6 +20,15 @@ struct BlockData
 	int handle;
 	MapChipType type;
 	VECTOR pos;
+	bool isReflact;
+
+	VECTOR move;
+	float width;
+	float height;
+	VECTOR startPos;
+	VECTOR prevPos;
+	float sin;
+	float cos;
 };
 
 struct MapChipData

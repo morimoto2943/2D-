@@ -2,6 +2,8 @@
 #include "MapParameter.h"
 #include "MapChip.h"
 #include "Block.h"
+#include "../Collision/Collision.h"
+#include "../Collision/CollisionParameter.h"
 
 
 // キャラクターの周囲何マスまでチェックするか
