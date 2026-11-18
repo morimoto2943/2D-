@@ -61,6 +61,12 @@ BlockData* CreateBlock(MapChipType type, VECTOR pos)
 			block->handle = g_BlockHandle[type];
 			block->pos = pos;
 			block->type = type;
+
+			// ★ ここにブロックの幅と高さを配置してください
+			// ※ご自身のマップチップのピクセルサイズ（例: 32.0f や 64.0f など）に合わせて調整してください
+			block->width = 32.0f;
+			block->height = 32.0f;
+
 			return block;
 		}
 	}

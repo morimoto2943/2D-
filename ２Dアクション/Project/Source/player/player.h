@@ -11,17 +11,10 @@ enum PlayerAnimationType
 	PLAYER_ANIM_JUMP,
 	PLAYER_ANIM_FALL,
 	PLAYER_ANIM_LANDING,
+	PLAYER_ANIM_ATTACK,
 	PLAYER_ANIM_MAX,
 	PLAYER_ANIM_NONE = -1
 };
-
-
-
-
-
-
-
-
 
 //プレイヤー設定関連
 #define PLAYER_DEFAULT_POS_X (50.0f)
@@ -31,6 +24,18 @@ enum PlayerAnimationType
 //プレイヤーサイズ
 #define PLAYER_WIDTH (1)
 #define PLAYER_HEIGHT (1)
+
+// ==========================================
+// ★ 1. 攻撃判定用の構造体を追加
+// ==========================================
+struct AttackBox
+{
+	bool active;    // 判定が有効かどうか
+	float offsetX;  // プレイヤーからの相対Xオフセット
+	float offsetY;  // プレイヤーからの相対Yオフセット
+	float width;    // 判定の幅
+	float height;   // 判定の高さ
+};
 
 // プレイヤーデータ
 struct PlayerData
@@ -49,6 +54,12 @@ struct PlayerData
 	float drawOffsetY;							// 描画位置補正
 	AnimationData animation[PLAYER_ANIM_MAX];	// アニメーション
 	PlayerAnimationType playAnim;				// 再生中のアニメーション
+	bool isAnimLock; // アニメーションの割り込みを禁止するかどうか
+
+	// ==========================================
+	// ★ 2. プレイヤーデータに攻撃判定を持たせる
+	// ==========================================
+	AttackBox attackBox;
 };
 
 // 関数のプロトタイプ宣言

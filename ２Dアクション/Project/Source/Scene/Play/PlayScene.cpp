@@ -9,7 +9,6 @@
 
 void InitPlayScene()
 {
-	
 	// マップ初期化
 	InitMap();
 
@@ -22,7 +21,6 @@ void InitPlayScene()
 
 void LoadPlayScene()
 {
-	
 	LoadPlayer();
 
 	// マップをロード
@@ -33,15 +31,15 @@ void StartPlayScene()
 {
 	StartPlayer();
 
-
 	// マップを開始
 	StartMap();
-
-	
 }
 
 void StepPlayScene()
 {
+	// もし StepMap が存在しない場合はここも削除してください
+	// StepMap();
+
 	StepPlayer();
 
 	StepCamera();
@@ -49,12 +47,10 @@ void StepPlayScene()
 
 void UpdatePlayScene()
 {
-	// マップ更新
-	
-	
-	//プレイヤーの更新
+	// ? UpdateMap() は存在しないため削除しました
+
+	// プレイヤーの更新
 	UpdatePlayer();
-	
 }
 
 void DrawPlayScene()
